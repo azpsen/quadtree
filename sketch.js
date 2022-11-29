@@ -6,7 +6,7 @@ let h = 600;
 function setup() {
   // put setup code here
   createCanvas(w, h);
-  qt = new QuadTree(w, h, capacity);
+  qt = new QuadTree(w / 2, h / 2, w, h, capacity);
 }
 
 function draw() {
