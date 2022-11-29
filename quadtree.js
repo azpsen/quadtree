@@ -16,6 +16,12 @@ class QuadTree {
     this.ne = null;
     this.sw = null;
     this.se = null;
+
+    // corners of this node
+    this.leftx = this.x - this.width / 2;
+    this.rightx = this.x + this.width / 2;
+    this.topy = this.y - this.width / 2;
+    this.bottomy = this.y + this.width / 2;
   }
 
   contains(point) {
@@ -23,16 +29,6 @@ class QuadTree {
            point.x > this.x - this.width / 2 &&
            point.y < this.y + this.height / 2 &&
            point.y > this.y - this.height / 2;
-  }
-
-  overlapsRect(r) {
-    if (r.x - r.width / 2 > this.x + this.width / 2 || r.x + r.width / 2 < this.x - this.width / 2)
-      return false;
-
-    if (r.y - r.height / 2 > this.y + this.height / 2 || r.y + r.height / 2 < this.y - this.height / 2)
-      return false;
-
-    return true;
   }
 
   subdivide() {
@@ -67,6 +63,64 @@ class QuadTree {
     } else {
       this.points.push(point);
     }
+  }
+
+  pointLineDist(px, py, x1, y1, x2, y2) {
+    return abs((x2 - x1) * (y1 - py) - (x1 - px) * (y2 - y1)) / dist(x1, y1, x2, y2);
+  }
+
+  overlapsCircle(c) {
+    // circle's center is within rectangle
+    if (this.contains(c))
+      return true;
+
+    // top line
+    if (this.pointLineDist(c.x, c.y, this.leftx, this.topy, this.rightx, this.topy) < c.radius)
+      return true;
+
+    // left line
+    if (this.pointLineDist(c.x, c.y, this.leftx, this.bottomy, this.leftx, this.topy) < c.radius)
+      return true;
+
+    // right line
+    if (this.pointLineDist(c.x, c.y, this.rightx, this.bottomy, this.rightx, this.topy) < c.radius)
+      return true;
+
+    // bototm line
+    if (this.pointLineDist(c.x, c.y, this.leftx, this.bottomy, this.rightx, this.bottomy) < c.radius)
+      return true;
+
+    return false;
+  }
+
+  pointsWithinCircle(c) {
+    if (!this.overlapsCircle(c))
+      return [];
+
+    // check this node's points for overlap
+    let points = [];
+    for (let p of this.points) {
+      if (c.contains(p))
+        points.push(p);
+    }
+
+    // check child nodes for overlap
+    if (this.nw) points = points.concat(this.nw.pointsWithinCircle(c));
+    if (this.ne) points = points.concat(this.ne.pointsWithinCircle(c));
+    if (this.sw) points = points.concat(this.sw.pointsWithinCircle(c));
+    if (this.se) points = points.concat(this.se.pointsWithinCircle(c));
+
+    return points;
+  }
+
+  overlapsRect(r) {
+    if (r.x - r.width / 2 > this.x + this.width / 2 || r.x + r.width / 2 < this.x - this.width / 2)
+      return false;
+
+    if (r.y - r.height / 2 > this.y + this.height / 2 || r.y + r.height / 2 < this.y - this.height / 2)
+      return false;
+
+    return true;
   }
 
   pointsWithinRect(r) {

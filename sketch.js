@@ -1,11 +1,19 @@
 let qt; // quadtree
 let capacity = 4; // quadtree capacity
+
 let r; // rectangle for quadtree area search
 let rw = 200; // rectangle width
 let rh = 200; // rectangle height
+
+let c; // circle for quadtree area search
+let cr = 100; // circle radius
+
 let w = 600; // canvas width
 let h = 600; // canvas height
+
 let points = []; // points in search area
+
+let shape = "c"; // type of shape to search with
 
 function setup() {
   createCanvas(w, h);
@@ -13,10 +21,13 @@ function setup() {
   // initialize quadtree
   qt = new QuadTree(w / 2, h / 2, w, h, capacity);
 
-  generatePoints(1000);
+  generatePoints(2000);
 
   // initialize quadtree area search rectangle
   r = new Rectangle(mouseX, mouseY, rw, rh);
+
+  // initialize quadtree area search circle
+  c = new Circle(mouseX, mouseY, cr);
 }
 
 function generatePoints(n) {
@@ -41,11 +52,20 @@ function draw() {
   qt.show();
   qt.visualize();
 
-  r.x = mouseX;
-  r.y = mouseY;
-  r.show();
-  
-  points = qt.pointsWithinRect(r);
+  if (shape == "r") {
+    r.x = mouseX;
+    r.y = mouseY;
+    r.show();
+
+    points = qt.pointsWithinRect(r);
+  } else if (shape == "c") {
+    c.x = mouseX;
+    c.y = mouseY;
+    c.show();
+
+    points = qt.pointsWithinCircle(c);
+  }
+
   for (let p of points) {
     strokeWeight(4);
     stroke(0, 255, 0);
