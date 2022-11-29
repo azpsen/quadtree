@@ -25,6 +25,16 @@ class QuadTree {
            point.y > this.y - this.height / 2;
   }
 
+  overlapsRect(r) {
+    if (r.x - r.width / 2 > this.x + this.width / 2 || r.x + r.width / 2 < this.x - this.width / 2)
+      return false;
+
+    if (r.y - r.height / 2 > this.y + this.height / 2 || r.y + r.height / 2 < this.y - this.height / 2)
+      return false;
+
+    return true;
+  }
+
   subdivide() {
     // initialize subdivisions
     this.nw = new QuadTree(this.x - this.width / 4, this.y - this.height / 4,
@@ -57,7 +67,26 @@ class QuadTree {
     } else {
       this.points.push(point);
     }
-    console.log(this.points);
+  }
+
+  pointsWithinRect(r) {
+    if (!this.overlapsRect(r))
+      return [];
+
+    // check this node's points for overlap
+    let points = [];
+    for (let p of this.points) {
+      if (r.contains(p))
+        points.push(p);
+    }
+
+    // check child nodes for overlap
+    if (this.nw) points = points.concat(this.nw.pointsWithinRect(r));
+    if (this.ne) points = points.concat(this.ne.pointsWithinRect(r));
+    if (this.sw) points = points.concat(this.sw.pointsWithinRect(r));
+    if (this.se) points = points.concat(this.se.pointsWithinRect(r));
+
+    return points;
   }
 
   show() {
