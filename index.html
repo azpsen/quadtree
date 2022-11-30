@@ -8,8 +8,18 @@
   <style>
     body {
       padding: 0;
-      margin: 0;
+      margin: 1em;
       background-color: #1b1b1b;
+      color: #ffffff;
+    }
+    #sketch {
+      width: 600px;
+      float: left;
+    }
+    #settings {
+      margin-left: 1em;
+      width: 40%;
+      float: left;
     }
   </style>
   <script src="p5.min.js"></script>
@@ -17,12 +27,18 @@
   <script src="point.js"></script>
   <script src="rectangle.js"></script>
   <script src="circle.js"></script>
-  <!-- <script src="../addons/p5.sound.js"></script> -->
   <script src="sketch.js"></script>
 </head>
 
 <body>
   <main>
+    <div id="sketch"></div>
+    <div id="settings">
+      <div id="controls"></div>
+      <div id="square-settings", style="display:none"></div>
+      <div id="circle-settings", style="display:none"></div>
+      <div id="point-settings", style="display:none"></div>
+    </div>
   </main>
 </body>
 

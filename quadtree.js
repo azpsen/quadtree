@@ -1,6 +1,6 @@
 class QuadTree {
 
-  constructor(x, y, width, height, capacity=4) {
+  constructor(x, y, width, height, capacity) {
     this.width = width; // width of quadtree area
     this.height = height; // height of quadtree area
     this.capacity = capacity; // amount of points to hold in each section
@@ -49,7 +49,7 @@ class QuadTree {
     if (!this.contains(point))
       return;
 
-    if (this.points.length >= capacity) {
+    if (this.points.length >= this.capacity) {
       if (!this.subdivided) {
         // create subdivisions
         this.subdivide();
@@ -63,6 +63,27 @@ class QuadTree {
     } else {
       this.points.push(point);
     }
+  }
+
+  clearTree() {
+    this.points = [];
+    if (this.nw) {
+      this.nw.clearTree();
+      this.nw = null;
+    }
+    if (this.ne) {
+      this.ne.clearTree();
+      this.ne = null;
+    }
+    if (this.sw) {
+      this.sw.clearTree();
+      this.sw = null;
+    }
+    if (this.se) {
+      this.se.clearTree();
+      this.se = null;
+    }
+    this.subdivided = false;
   }
 
   pointLineDist(px, py, x1, y1, x2, y2) {
