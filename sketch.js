@@ -152,11 +152,14 @@ function fpsChanged() {
 
 function generatePoints() {
   let n = pointNumInput.value();
+  let pointArray = [];
   // add random points
   for (let i = 0; i < n; i++) {
     let p = new Point(randomGaussian(w / 2, w / 6), randomGaussian(h / 2, h / 6));
-    qt.insert(p);
+    pointArray.push(p);
+    // qt.insert(p);
   }
+  qt.build(pointArray);
 }
 
 function clearTree() {

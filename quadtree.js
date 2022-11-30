@@ -24,6 +24,35 @@ class QuadTree {
     this.bottomy = this.y + this.width / 2;
   }
 
+  build(points) {
+    if (this.points.length < this.capacity) {
+      let successes = 0;
+      for (let i = 0; i < points.length; i++) {
+        if (this.points.length >= this.capacity)
+          break;
+
+        if (this.contains(points[i])) {
+          this.points.push(points[i]);
+          points.splice(i, 1);
+          successes++;
+        }
+      }
+
+      if (successes == 0)
+        return;
+    }
+
+    if (points.length > 0) {
+      this.subdivide();
+
+      this.nw.build(points);
+      this.ne.build(points);
+      this.sw.build(points);
+      this.se.build(points);
+    }
+
+  }
+
   contains(point) {
     return point.x < this.x + this.width / 2 &&
            point.x > this.x - this.width / 2 &&
@@ -32,6 +61,7 @@ class QuadTree {
   }
 
   subdivide() {
+    if (this.subdivided) return;
     // initialize subdivisions
     this.nw = new QuadTree(this.x - this.width / 4, this.y - this.height / 4,
                            this.width / 2, this.height / 2, this.capacity);
