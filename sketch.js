@@ -274,9 +274,16 @@ function draw() {
     c.show();
 
     points = qt.pointsWithinCircle(c);
+  } else if (shape == "p") {
+    // search for nearest points
+    points = qt.nearestPointXY(mouseX, mouseY);
+    strokeWeight(4);
+    stroke(0, 255, 255);
+    line(mouseX, mouseY, points[0].x, points[0].y);
   }
 
   for (let p of points) {
+    if (p == null) break;
     strokeWeight(4);
     stroke(0, 255, 0);
     point(p.x, p.y);

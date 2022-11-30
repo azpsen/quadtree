@@ -183,12 +183,44 @@ class QuadTree {
     }
 
     // check child nodes for overlap
-    if (this.nw) points = points.concat(this.nw.pointsWithinRect(r));
-    if (this.ne) points = points.concat(this.ne.pointsWithinRect(r));
-    if (this.sw) points = points.concat(this.sw.pointsWithinRect(r));
-    if (this.se) points = points.concat(this.se.pointsWithinRect(r));
+    if (this.subdivided) {
+      points = points.concat(this.nw.pointsWithinRect(r));
+      points = points.concat(this.ne.pointsWithinRect(r));
+      points = points.concat(this.sw.pointsWithinRect(r));
+      points = points.concat(this.se.pointsWithinRect(r));
+    }
 
     return points;
+  }
+
+  nearestPointXY(x, y) {
+    return [this.nearestPoint(new Point(x, y))];
+  }
+
+  nearestPoint(p) {
+    let curNearest = null;
+    let curDist = Infinity;
+    let radius = 0;
+    let cir;
+    let foundPoints = [];
+
+    do {
+      radius += 10;
+      cir = new Circle(p.x, p.y, radius);
+      foundPoints = this.pointsWithinCircle(cir);
+    } while (foundPoints.length == 0);
+
+    curNearest = foundPoints[0];
+
+    for (let point of foundPoints) {
+      let pointDist = dist(point.x, point.y, p.x, p.y);
+      if (pointDist < curDist) {
+        curNearest = point;
+        curDist = pointDist;
+      }
+    }
+
+    return curNearest;
   }
 
   show() {
