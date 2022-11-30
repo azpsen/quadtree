@@ -180,9 +180,7 @@ function clearTree() {
 
 function rebuildTree() {
   let pts = qt.toArray();
-  console.log(pts);
   qt.clearTree();
-  console.log("cleared");
   qt.capacity = capacitySlider.value();
   qt.build(pts);
 }
@@ -254,6 +252,7 @@ function draw() {
     qt.visualize();
 
   if (showFPS) {
+    strokeWeight(1);
     fill(255, 255, 0);
     textSize(24);
     textAlign(LEFT, TOP);
