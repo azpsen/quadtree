@@ -193,11 +193,11 @@ class QuadTree {
     return points;
   }
 
-  nearestPointXY(x, y) {
-    return [this.nearestPoint(new Point(x, y))];
+  nearestPointsXY(x, y, n) {
+    return this.nearestPoints(new Point(x, y), n);
   }
 
-  nearestPoint(p) {
+  nearestPoints(p, n) {
     let curNearest = null;
     let curDist = Infinity;
     let radius = 0;
@@ -208,19 +208,17 @@ class QuadTree {
       radius += 10;
       cir = new Circle(p.x, p.y, radius);
       foundPoints = this.pointsWithinCircle(cir);
-    } while (foundPoints.length == 0);
+    } while (foundPoints.length <= n && radius < this.width);
+
+    if (foundPoints.length == n)
+      return foundPoints;
 
     curNearest = foundPoints[0];
 
-    for (let point of foundPoints) {
-      let pointDist = dist(point.x, point.y, p.x, p.y);
-      if (pointDist < curDist) {
-        curNearest = point;
-        curDist = pointDist;
-      }
-    }
+    foundPoints.sort(function(a, b){return dist(a.x, a.y, p.y, p.y) - dist(b.x, b.y, p.x, p.y)});
+    foundPoints.length = n;
 
-    return curNearest;
+    return foundPoints;
   }
 
   show() {

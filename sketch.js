@@ -51,6 +51,8 @@ let circleSizeSliderLabel;
 let pointsNearLabel;
 let pointsNearSlider;
 let pointsNearSliderLabel;
+let pointsNearCheck;
+let drawPointsLine = true;
 
 
 function setup() {
@@ -134,7 +136,7 @@ function createUI() {
   searchSelect.option("None");
   searchSelect.option("Points Within Square");
   searchSelect.option("Points Within Circle");
-  searchSelect.option("Nearest Point");
+  searchSelect.option("Nearest Points");
   searchSelect.changed(searchSelectChanged);
 
   p = createP();
@@ -153,6 +155,20 @@ function createUI() {
   circleSizeSlider.parent("circle-settings");
   circleSizeSliderLabel = createSpan(rw);
   circleSizeSliderLabel.parent("circle-settings");
+
+  pointsNearLabel = createSpan("Number of Nearest Points ");
+  pointsNearLabel.parent("point-settings");
+  pointsNearSlider = createSlider(1, 10, 3);
+  pointsNearSlider.parent("point-settings");
+  pointsNearSliderLabel = createSpan(3);
+  pointsNearSliderLabel.parent("point-settings");
+
+  p = createP();
+  p.parent("point-settings");
+
+  pointsNearCheck = createCheckbox("Draw Lines to Points", drawPointsLine);
+  pointsNearCheck.parent("point-settings");
+  pointsNearCheck.changed(drawPointsLines);
 }
 
 function fpsChanged() {
@@ -189,6 +205,10 @@ function toggleVis() {
   visualize = !visualize;
 }
 
+function drawPointsLines() {
+  drawPointsLine = !drawPointsLine;
+}
+
 function searchSelectChanged() {
   let sq = select("#square-settings");
   let ci = select("#circle-settings");
@@ -206,7 +226,7 @@ function searchSelectChanged() {
       sq.style("display", "none");
       po.style("display", "none");
       break;
-    case "Nearest Point":
+    case "Nearest Points":
       shape = "p";
       po.style("display", "block");
       ci.style("display", "none");
@@ -247,6 +267,8 @@ function draw() {
   circleSizeSliderLabel.html(" " + circleSizeSlider.value() + " ");
   c.radius = circleSizeSlider.value();
 
+  pointsNearSliderLabel.html(" " + pointsNearSlider.value() + " ");
+
   qt.show();
   if (visualize)
     qt.visualize();
@@ -275,16 +297,21 @@ function draw() {
     points = qt.pointsWithinCircle(c);
   } else if (shape == "p") {
     // search for nearest points
-    points = qt.nearestPointXY(mouseX, mouseY);
-    strokeWeight(4);
-    stroke(0, 255, 255);
-    line(mouseX, mouseY, points[0].x, points[0].y);
+    points = qt.nearestPointsXY(mouseX, mouseY, pointsNearSlider.value());
   }
 
   for (let p of points) {
-    if (p == null) break;
+    if (p == null) continue;
+
+    // draw point green
     strokeWeight(4);
     stroke(0, 255, 0);
     point(p.x, p.y);
+
+    // draw lines to nearest points
+    if (shape == "p" && drawPointsLine) {
+      stroke(0, 255, 255)
+      line(mouseX, mouseY, p.x, p.y);
+    }
   }
 }
