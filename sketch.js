@@ -24,10 +24,12 @@ let showFPS = false;
 let frameCount = 0;
 let fps = 0;
 
+let clearButton;
+
 let capacityLabel;
 let capacitySlider;
 let capacityCountLabel;
-let clearButton;
+let rebuildButton;
 
 let pointNumInput;
 let generateButton;
@@ -77,18 +79,25 @@ function createUI() {
   let p = createP();
   p.parent("controls");
 
+  clearButton = createButton("Clear Tree");
+  clearButton.parent("controls");
+  clearButton.mousePressed(clearTree);
+
+  p = createP();
+  p.parent("controls");
+
   capacityLabel = createSpan("Node Capacity ");
   capacityLabel.parent("controls");
 
-  capacitySlider = createSlider(1, 10, 4);
+  capacitySlider = createSlider(1, 50, 4);
   capacitySlider.parent("controls");
 
   capacityCountLabel = createSpan("4");
   capacityCountLabel.parent("controls");
 
-  clearButton = createButton("Reset Tree");
-  clearButton.parent("controls");
-  clearButton.mousePressed(clearTree);
+  rebuildButton = createButton("Rebuild Tree");
+  rebuildButton.parent("controls");
+  rebuildButton.mousePressed(rebuildTree);
 
   p = createP();
   p.parent("controls");
@@ -153,18 +162,29 @@ function fpsChanged() {
 function generatePoints() {
   let n = pointNumInput.value();
   let pointArray = [];
+
   // add random points
   for (let i = 0; i < n; i++) {
     let p = new Point(randomGaussian(w / 2, w / 6), randomGaussian(h / 2, h / 6));
     pointArray.push(p);
-    // qt.insert(p);
   }
+
+  // build quadtree from random points
   qt.build(pointArray);
 }
 
 function clearTree() {
   qt.clearTree();
   qt.capacity = capacitySlider.value();
+}
+
+function rebuildTree() {
+  let pts = qt.toArray();
+  console.log(pts);
+  qt.clearTree();
+  console.log("cleared");
+  qt.capacity = capacitySlider.value();
+  qt.build(pts);
 }
 
 function toggleVis() {
@@ -234,7 +254,7 @@ function draw() {
     qt.visualize();
 
   if (showFPS) {
-    fill(0, 255, 0);
+    fill(255, 255, 0);
     textSize(24);
     textAlign(LEFT, TOP);
     text("FPS: " + fps, 10, 10);

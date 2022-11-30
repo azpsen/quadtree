@@ -25,39 +25,29 @@ class QuadTree {
   }
 
   build(points) {
-    if (this.points.length < this.capacity) {
-      let successes = 0;
-      for (let i = 0; i < points.length; i++) {
-        if (this.points.length >= this.capacity)
-          break;
+    for (let p of points)
+      this.insert(p);
+  }
 
-        if (this.contains(points[i])) {
-          this.points.push(points[i]);
-          points.splice(i, 1);
-          successes++;
-        }
-      }
+  toArray() {
+    let points = this.points;
 
-      if (successes == 0)
-        return;
+    // check child nodes for overlap
+    if (this.subdivided) {
+      points = points.concat(this.nw.toArray());
+      points = points.concat(this.ne.toArray());
+      points = points.concat(this.sw.toArray());
+      points = points.concat(this.se.toArray());
     }
 
-    if (points.length > 0) {
-      this.subdivide();
-
-      this.nw.build(points);
-      this.ne.build(points);
-      this.sw.build(points);
-      this.se.build(points);
-    }
-
+    return points;
   }
 
   contains(point) {
-    return point.x < this.x + this.width / 2 &&
-           point.x > this.x - this.width / 2 &&
-           point.y < this.y + this.height / 2 &&
-           point.y > this.y - this.height / 2;
+    return point.x <= this.x + this.width / 2 &&
+           point.x >= this.x - this.width / 2 &&
+           point.y <= this.y + this.height / 2 &&
+           point.y >= this.y - this.height / 2;
   }
 
   subdivide() {
@@ -71,6 +61,14 @@ class QuadTree {
                            this.width / 2, this.height / 2, this.capacity);
     this.se = new QuadTree(this.x + this.width / 4, this.y + this.height / 4,
                            this.width / 2, this.height / 2, this.capacity);
+    for (let i = 0; i < this.capacity; i++) {
+      let p = this.points.pop();
+      if (p == null) break;
+      this.nw.insert(p);
+      this.ne.insert(p);
+      this.sw.insert(p);
+      this.se.insert(p);
+    }
     this.subdivided = true;
   }
 
@@ -79,11 +77,9 @@ class QuadTree {
     if (!this.contains(point))
       return;
 
-    if (this.points.length >= this.capacity) {
-      if (!this.subdivided) {
-        // create subdivisions
+    if (this.points.length >= this.capacity || this.subdivided) {
+      if (!this.subdivided)
         this.subdivide();
-      }
 
       // try inserting point in each subdivision
       this.nw.insert(point);
@@ -93,6 +89,7 @@ class QuadTree {
     } else {
       this.points.push(point);
     }
+    // console.log("FAILURE");
   }
 
   clearTree() {
