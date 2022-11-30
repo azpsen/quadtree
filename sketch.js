@@ -312,6 +312,7 @@ function draw() {
     // draw lines to nearest points
     if (shape == "p" && drawPointsLine) {
       stroke(0, 255, 255)
+      strokeWeight(1);
       line(mouseX, mouseY, p.x, p.y);
     }
   }
