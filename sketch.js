@@ -302,11 +302,12 @@ function draw() {
 
   for (let p of points) {
     if (p == null) continue;
+    p.selected = true;
 
     // draw point green
-    strokeWeight(4);
-    stroke(0, 255, 0);
-    point(p.x, p.y);
+    // strokeWeight(4);
+    // stroke(0, 255, 0);
+    // point(p.x, p.y);
 
     // draw lines to nearest points
     if (shape == "p" && drawPointsLine) {

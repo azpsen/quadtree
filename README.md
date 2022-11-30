@@ -1,4 +1,4 @@
-#p5.js QuadTree Visualization
+# p5.js QuadTree Visualization
 
 Basic implementation of a quadtree algorithm in p5.js
 

@@ -3,11 +3,16 @@ class Point {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.color = 255;
+    this.selected = false;
   }
 
   show() {
-    stroke(this.color);
+    if (this.selected) {
+      stroke(0, 255, 0);
+      this.selected = false;
+    } else {
+      stroke(255);
+    }
     strokeWeight(5);
     point(this.x, this.y);
   }
